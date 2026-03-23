@@ -3,7 +3,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   // Rapier ships as a WASM module — we need to allow it to be loaded.
   optimizeDeps: {
-    exclude: ['@dimforge/rapier2d'],
+    exclude: ['@dimforge/rapier2d-compat'],
   },
   server: {
     headers: {

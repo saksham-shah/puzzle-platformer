@@ -1,21 +1,14 @@
 import * as PIXI from 'pixi.js'
-import { IWorld, query } from 'bitecs'
-import { Position, Player, Platform, Goal, Hazard } from '../components'
-import {
-  CANVAS_W, CANVAS_H, PIXELS_PER_METER,
-  COLOR,
-} from '../constants'
-
-// ─── Sprite pools ─────────────────────────────────────────────────────────────
-// We re-create graphics on level load; during gameplay we just update positions.
+import { type IWorld, query } from 'bitecs'
+import { Position, Player, Platform, Goal, Hazard } from './components'
+import { CANVAS_W, CANVAS_H, PIXELS_PER_METER, COLOR } from './constants'
 
 export interface RendererState {
-  app          : PIXI.Application
+  app           : PIXI.Application
   worldContainer: PIXI.Container
-  spriteMap    : Map<number, PIXI.Graphics>
+  spriteMap     : Map<number, PIXI.Graphics>
 }
 
-/** Boot PixiJS and attach canvas to the DOM. */
 export function createRenderer(container: HTMLElement): RendererState {
   const app = new PIXI.Application({
     width           : CANVAS_W,
@@ -34,9 +27,11 @@ export function createRenderer(container: HTMLElement): RendererState {
   return { app, worldContainer, spriteMap: new Map() }
 }
 
-/** Call once after a level is loaded to create graphics for each entity. */
-export function buildSprites(world: IWorld, state: RendererState, tileSizes: Map<number, { w: number; h: number }>): void {
-  // Clear old sprites
+export function buildSprites(
+  world     : IWorld,
+  state     : RendererState,
+  tileSizes : Map<number, { w: number; h: number }>,
+): void {
   state.worldContainer.removeChildren()
   state.spriteMap.clear()
 
@@ -66,11 +61,9 @@ export function buildSprites(world: IWorld, state: RendererState, tileSizes: Map
   }
 }
 
-/** Called every frame — updates sprite screen positions from ECS Position data. */
 export function renderSystem(world: IWorld, state: RendererState): void {
   const { worldContainer, spriteMap } = state
 
-  // Camera: follow the player
   const players = query(world, [Player, Position])
   let camX = CANVAS_W / 2
   let camY = CANVAS_H / 2
@@ -81,15 +74,13 @@ export function renderSystem(world: IWorld, state: RendererState): void {
     camY = (Position.y[eid] ?? 0) * PIXELS_PER_METER
   }
 
-  worldContainer.x = CANVAS_W  / 2 - camX
-  worldContainer.y = CANVAS_H * 0.55 + camY   // Y-up → screen Y-down flip
+  worldContainer.x = CANVAS_W / 2 - camX
+  worldContainer.y = CANVAS_H * 0.55 + camY
 
-  // Update all sprites
-  const entities = query(world, [Position])
-  for (const eid of entities) {
+  for (const eid of query(world, [Position])) {
     const sprite = spriteMap.get(eid)
     if (!sprite) continue
-    sprite.x = (Position.x[eid] ?? 0) * PIXELS_PER_METER
-    sprite.y = -(Position.y[eid] ?? 0) * PIXELS_PER_METER  // flip Y
+    sprite.x =  (Position.x[eid] ?? 0) * PIXELS_PER_METER
+    sprite.y = -(Position.y[eid] ?? 0) * PIXELS_PER_METER
   }
 }
