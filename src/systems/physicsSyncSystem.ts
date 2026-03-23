@@ -3,6 +3,7 @@ import type RAPIER from '@dimforge/rapier2d-compat'
 import { Position, Velocity, RigidBodyRef, Grounded, Player } from '../components'
 import { PLAYER_HALF_H } from '../constants'
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 type RapierModule = typeof import('@dimforge/rapier2d-compat')
 
 export function physicsSyncSystem(
@@ -29,9 +30,9 @@ export function physicsSyncSystem(
     const origin = new Rapier.Ray({ x: pos.x, y: pos.y - PLAYER_HALF_H }, { x: 0, y: -1 })
     const hit    = rapierWorld.castRay(origin, 0.15, true)
     if (hit !== null) {
-      addComponent(world, Grounded, eid)
+      addComponent(world, eid, Grounded)
     } else {
-      removeComponent(world, Grounded, eid)
+      removeComponent(world, eid, Grounded)
     }
   }
 }

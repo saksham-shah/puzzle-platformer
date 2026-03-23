@@ -6,6 +6,7 @@ import {
   Player, Platform, Goal, Hazard, Input,
 } from './components'
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 type RapierModule = typeof import('@dimforge/rapier2d-compat')
 
 export interface WorldObjects {
@@ -26,31 +27,31 @@ export function loadLevel(
 
   for (const tile of levelDef.tiles) {
     const eid = addEntity(world)
-    addComponent(world, Position, eid)
+    addComponent(world, eid, Position)
     Position.x[eid] = tile.x
     Position.y[eid] = tile.y
     tileSizes.set(eid, { w: tile.w, h: tile.h })
 
-    if (tile.kind === 'platform') addComponent(world, Platform, eid)
-    if (tile.kind === 'goal')     addComponent(world, Goal,     eid)
-    if (tile.kind === 'hazard')   addComponent(world, Hazard,   eid)
+    if (tile.kind === 'platform') addComponent(world, eid, Platform)
+    if (tile.kind === 'goal')     addComponent(world, eid, Goal)
+    if (tile.kind === 'hazard')   addComponent(world, eid, Hazard)
 
     if (tile.kind === 'platform') {
       const bodyDesc = Rapier.RigidBodyDesc.fixed().setTranslation(tile.x, tile.y)
       const body     = rapierWorld.createRigidBody(bodyDesc)
       rapierWorld.createCollider(Rapier.ColliderDesc.cuboid(tile.w, tile.h), body)
-      addComponent(world, RigidBodyRef, eid)
+      addComponent(world, eid, RigidBodyRef)
       RigidBodyRef.handle[eid] = body.handle
       bodyMap.set(eid, body)
     }
   }
 
   const playerEid = addEntity(world)
-  addComponent(world, Position,     playerEid)
-  addComponent(world, Velocity,     playerEid)
-  addComponent(world, RigidBodyRef, playerEid)
-  addComponent(world, Player,       playerEid)
-  addComponent(world, Input,        playerEid)
+  addComponent(world, playerEid, Position)
+  addComponent(world, playerEid, Velocity)
+  addComponent(world, playerEid, RigidBodyRef)
+  addComponent(world, playerEid, Player)
+  addComponent(world, playerEid, Input)
 
   Position.x[playerEid] = levelDef.playerStart.x
   Position.y[playerEid] = levelDef.playerStart.y

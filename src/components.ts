@@ -1,17 +1,19 @@
-import { defineComponent, Types } from 'bitecs'
+// bitecs v0.4: components are plain objects/arrays — no defineComponent or Types needed.
+// Any JS reference can be a component; identity is determined by reference.
 
-export const Position     = defineComponent({ x: Types.f32, y: Types.f32 })
-export const Velocity     = defineComponent({ x: Types.f32, y: Types.f32 })
-export const RigidBodyRef = defineComponent({ handle: Types.ui32 })
+export const Position     = { x: [] as number[], y: [] as number[] }
+export const Velocity     = { x: [] as number[], y: [] as number[] }
+export const RigidBodyRef = { handle: [] as number[] }
 
-export const Player   = defineComponent()
-export const Platform = defineComponent()
-export const Goal     = defineComponent()
-export const Hazard   = defineComponent()
-export const Grounded = defineComponent()
+// Tag components — presence on an entity is enough, no data needed
+export const Player   = [] as number[]
+export const Platform = [] as number[]
+export const Goal     = [] as number[]
+export const Hazard   = [] as number[]
+export const Grounded = [] as number[]
 
-export const Input = defineComponent({
-  left  : Types.ui8,
-  right : Types.ui8,
-  jump  : Types.ui8,
-})
+export const Input = {
+  left  : [] as number[],
+  right : [] as number[],
+  jump  : [] as number[],
+}

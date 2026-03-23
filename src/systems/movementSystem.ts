@@ -22,7 +22,7 @@ export function movementSystem(
     if (jumpBuffer > 0) jumpBuffer--
 
     let newVy = vel.y
-    if (jumpBuffer > 0 && hasComponent(world, Grounded, eid)) {
+    if (jumpBuffer > 0 && hasComponent(world, eid, Grounded)) {
       newVy      = PLAYER_JUMP_FORCE
       jumpBuffer = 0
     }
