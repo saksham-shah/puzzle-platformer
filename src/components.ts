@@ -1,24 +1,19 @@
-import { defineComponent, Types } from 'bitecs'
+// bitecs v0.4: components are plain objects/arrays — no defineComponent or Types needed.
+// Any JS reference can be a component; identity is determined by reference.
 
-// ─── Position & Velocity (mirrors Rapier body, kept for rendering) ───────────
-export const Position = defineComponent({ x: Types.f32, y: Types.f32 })
-export const Velocity = defineComponent({ x: Types.f32, y: Types.f32 })
+export const Position     = { x: [] as number[], y: [] as number[] }
+export const Velocity     = { x: [] as number[], y: [] as number[] }
+export const RigidBodyRef = { handle: [] as number[] }
 
-// ─── Physics body handle ─────────────────────────────────────────────────────
-// Stores the Rapier rigid-body handle so systems can look it up.
-export const RigidBodyRef = defineComponent({ handle: Types.ui32 })
+// Tag components — presence on an entity is enough, no data needed
+export const Player   = [] as number[]
+export const Platform = [] as number[]
+export const Goal     = [] as number[]
+export const Hazard   = [] as number[]
+export const Grounded = [] as number[]
 
-// ─── Tags ────────────────────────────────────────────────────────────────────
-// Tag components have no data — presence alone conveys meaning.
-export const Player      = defineComponent()
-export const Platform    = defineComponent()
-export const Goal        = defineComponent()   // reach this to complete the level
-export const Hazard      = defineComponent()   // touching this kills the player
-export const Grounded    = defineComponent()   // player is on the ground this frame
-
-// ─── Input state (written by InputSystem, read by MovementSystem) ─────────────
-export const Input = defineComponent({
-  left  : Types.ui8,
-  right : Types.ui8,
-  jump  : Types.ui8,
-})
+export const Input = {
+  left  : [] as number[],
+  right : [] as number[],
+  jump  : [] as number[],
+}

@@ -8,12 +8,12 @@ importers:
 
   .:
     dependencies:
-      '@dimforge/rapier2d':
+      '@dimforge/rapier2d-compat':
         specifier: ^0.12.0
         version: 0.12.0
       bitecs:
-        specifier: ^0.3.40
-        version: 0.3.40
+        specifier: ^0.4.0
+        version: 0.4.0
       pixi.js:
         specifier: ^7.4.2
         version: 7.4.3
@@ -39,8 +39,8 @@ importers:
 
 packages:
 
-  '@dimforge/rapier2d@0.12.0':
-    resolution: {integrity: sha512-ngT/7PH9r81wVKpT0wwxSLsfmoVeoG9E2l0X2icfoHy2SRYAybITKzJT8vClWail5alPvR8+P8Mn8eIGWFCJag==}
+  '@dimforge/rapier2d-compat@0.12.0':
+    resolution: {integrity: sha512-7mvskl7Ql3nrrwkrv8fa0spukV1XS6nI42+YG6RW2HNBgxomASXS1Yx+VOH39SFs65OJcx86Ygmxqy1f2T9csw==}
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -670,8 +670,8 @@ packages:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
     engines: {node: 18 || 20 || >=22}
 
-  bitecs@0.3.40:
-    resolution: {integrity: sha512-wAylY4pNfX8IeIH5phtwt1lUNtHKrkoSNrArI7Ris2Y4nEQWFIVvXdgAuqprEg9bq8Wolmlj0gVfeG6MFmtI2Q==}
+  bitecs@0.4.0:
+    resolution: {integrity: sha512-ho6Zop/L79DRTnBAfakPpGPuX7y0+lAjX06CpaAW+5tnAc7BH3L3RlSrWAXAqwnQGDZ10GsoxaxyTTsddlun3g==}
 
   brace-expansion@1.1.12:
     resolution: {integrity: sha512-9T9UjW3r0UW5c1Q7GTwllptXwhvYmEzFhzMfZ9H7FQWt+uZePjZPjBP/W1ZEyZ1twGWom5/56TF4lPcqjnDHcg==}
@@ -1130,7 +1130,7 @@ packages:
 
 snapshots:
 
-  '@dimforge/rapier2d@0.12.0': {}
+  '@dimforge/rapier2d-compat@0.12.0': {}
 
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
@@ -1645,7 +1645,7 @@ snapshots:
 
   balanced-match@4.0.4: {}
 
-  bitecs@0.3.40: {}
+  bitecs@0.4.0: {}
 
   brace-expansion@1.1.12:
     dependencies:

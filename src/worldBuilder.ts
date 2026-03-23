@@ -1,87 +1,72 @@
-import { IWorld, addEntity, addComponent } from 'bitecs'
-import type RAPIER from '@dimforge/rapier2d'
-import { LevelDef } from './levels'
+import { type World, addEntity, addComponent } from 'bitecs'
+import type RAPIER from '@dimforge/rapier2d-compat'
+import type { LevelDef } from './levels'
 import {
   Position, Velocity, RigidBodyRef,
   Player, Platform, Goal, Hazard, Input,
 } from './components'
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+type RapierModule = typeof import('@dimforge/rapier2d-compat')
+
 export interface WorldObjects {
   playerEid : number
-  bodyMap   : Map<number, RAPIER.RigidBody>   // eid → Rapier body
+  bodyMap   : Map<number, RAPIER.RigidBody>
   tileSizes : Map<number, { w: number; h: number }>
 }
 
-/**
- * Tear down the previous Rapier world and create a fresh one for the level.
- * Returns the new Rapier world plus all entity metadata.
- */
 export function loadLevel(
-  world       : IWorld,
-  RAPIER      : typeof import('@dimforge/rapier2d'),
-  levelDef    : LevelDef,
+  world    : World,
+  Rapier   : RapierModule,
+  levelDef : LevelDef,
 ): { rapierWorld: RAPIER.World } & WorldObjects {
 
-  // ── Physics world ─────────────────────────────────────────────────────────
-  const rapierWorld = new RAPIER.World({ x: 0, y: -30 })
+  const rapierWorld = new Rapier.World({ x: 0, y: -30 })
+  const bodyMap     = new Map<number, RAPIER.RigidBody>()
+  const tileSizes   = new Map<number, { w: number; h: number }>()
 
-  const bodyMap   = new Map<number, RAPIER.RigidBody>()
-  const tileSizes = new Map<number, { w: number; h: number }>()
-
-  // ── Static tiles ──────────────────────────────────────────────────────────
   for (const tile of levelDef.tiles) {
     const eid = addEntity(world)
-
-    addComponent(world, Position, eid)
+    addComponent(world, eid, Position)
     Position.x[eid] = tile.x
     Position.y[eid] = tile.y
-
     tileSizes.set(eid, { w: tile.w, h: tile.h })
 
-    // ECS tag
-    if (tile.kind === 'platform') addComponent(world, Platform, eid)
-    if (tile.kind === 'goal')     addComponent(world, Goal,     eid)
-    if (tile.kind === 'hazard')   addComponent(world, Hazard,   eid)
+    if (tile.kind === 'platform') addComponent(world, eid, Platform)
+    if (tile.kind === 'goal')     addComponent(world, eid, Goal)
+    if (tile.kind === 'hazard')   addComponent(world, eid, Hazard)
 
-    // Rapier static body (goals/hazards are sensors conceptually but we
-    // use AABB checks in triggerSystem, so they can be static colliders too
-    // for platforms, or just positioned entities for triggers).
     if (tile.kind === 'platform') {
-      const bodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(tile.x, tile.y)
+      const bodyDesc = Rapier.RigidBodyDesc.fixed().setTranslation(tile.x, tile.y)
       const body     = rapierWorld.createRigidBody(bodyDesc)
-      const shape    = RAPIER.ColliderDesc.cuboid(tile.w, tile.h)
-      rapierWorld.createCollider(shape, body)
-
-      addComponent(world, RigidBodyRef, eid)
+      rapierWorld.createCollider(Rapier.ColliderDesc.cuboid(tile.w, tile.h), body)
+      addComponent(world, eid, RigidBodyRef)
       RigidBodyRef.handle[eid] = body.handle
       bodyMap.set(eid, body)
     }
   }
 
-  // ── Player ────────────────────────────────────────────────────────────────
   const playerEid = addEntity(world)
-
-  addComponent(world, Position,     playerEid)
-  addComponent(world, Velocity,     playerEid)
-  addComponent(world, RigidBodyRef, playerEid)
-  addComponent(world, Player,       playerEid)
-  addComponent(world, Input,        playerEid)
+  addComponent(world, playerEid, Position)
+  addComponent(world, playerEid, Velocity)
+  addComponent(world, playerEid, RigidBodyRef)
+  addComponent(world, playerEid, Player)
+  addComponent(world, playerEid, Input)
 
   Position.x[playerEid] = levelDef.playerStart.x
   Position.y[playerEid] = levelDef.playerStart.y
 
-  const playerBodyDesc = RAPIER.RigidBodyDesc
+  const playerBodyDesc = Rapier.RigidBodyDesc
     .dynamic()
     .setTranslation(levelDef.playerStart.x, levelDef.playerStart.y)
-    .lockRotations()           // prevent tumbling
+    .lockRotations()
     .setLinearDamping(0.05)
 
   const playerBody = rapierWorld.createRigidBody(playerBodyDesc)
   rapierWorld.createCollider(
-    RAPIER.ColliderDesc.cuboid(0.4, 0.6).setFriction(0.3),
+    Rapier.ColliderDesc.cuboid(0.4, 0.6).setFriction(0.3),
     playerBody,
   )
-
   RigidBodyRef.handle[playerEid] = playerBody.handle
   bodyMap.set(playerEid, playerBody)
 
