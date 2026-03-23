@@ -1,12 +1,12 @@
 import * as PIXI from 'pixi.js'
-import { type IWorld, query } from 'bitecs'
+import { type World, query } from 'bitecs'
 import { Position, Player, Platform, Goal, Hazard } from './components'
 import { CANVAS_W, CANVAS_H, PIXELS_PER_METER, COLOR } from './constants'
 
 export interface RendererState {
-  app           : PIXI.Application
-  worldContainer: PIXI.Container
-  spriteMap     : Map<number, PIXI.Graphics>
+  app            : PIXI.Application
+  worldContainer : PIXI.Container
+  spriteMap      : Map<number, PIXI.Graphics>
 }
 
 export function createRenderer(container: HTMLElement): RendererState {
@@ -18,17 +18,14 @@ export function createRenderer(container: HTMLElement): RendererState {
     resolution      : window.devicePixelRatio || 1,
     autoDensity     : true,
   })
-
   container.appendChild(app.view as HTMLCanvasElement)
-
   const worldContainer = new PIXI.Container()
   app.stage.addChild(worldContainer)
-
   return { app, worldContainer, spriteMap: new Map() }
 }
 
 export function buildSprites(
-  world     : IWorld,
+  world     : World,
   state     : RendererState,
   tileSizes : Map<number, { w: number; h: number }>,
 ): void {
@@ -61,7 +58,7 @@ export function buildSprites(
   }
 }
 
-export function renderSystem(world: IWorld, state: RendererState): void {
+export function renderSystem(world: World, state: RendererState): void {
   const { worldContainer, spriteMap } = state
 
   const players = query(world, [Player, Position])

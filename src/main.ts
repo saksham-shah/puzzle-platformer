@@ -1,4 +1,4 @@
-import { createWorld, deleteWorld } from 'bitecs'
+import { createWorld } from 'bitecs'
 
 import { LEVELS }                                     from './levels'
 import { loadLevel }                                  from './worldBuilder'
@@ -10,13 +10,11 @@ import { triggerSystem }                              from './systems/triggerSys
 import { PHYSICS_STEP }                               from './constants'
 
 async function main() {
-  // rapier2d-compat exposes .init() and works without manual WASM loading
   const RAPIER = await import('@dimforge/rapier2d-compat')
   await RAPIER.init()
 
   const container = document.getElementById('game-container')!
   const renderer  = createRenderer(container)
-
   initInputListeners()
 
   let currentLevelIndex = 0
@@ -46,7 +44,6 @@ async function main() {
       restartDelay -= delta
       if (restartDelay <= 0) {
         if (levelComplete) currentLevelIndex = (currentLevelIndex + 1) % LEVELS.length
-        deleteWorld(world)
         ;({ world, rapierWorld, bodyMap } = loadCurrentLevel())
         dead = false; levelComplete = false; restartDelay = 0
       }
@@ -56,14 +53,13 @@ async function main() {
     accumulator += delta
     while (accumulator >= PHYSICS_STEP) {
       inputSystem(world)
-      movementSystem(world, rapierWorld, bodyMap)
+      movementSystem(world, bodyMap)
       rapierWorld.step()
       physicsSyncSystem(world, rapierWorld, RAPIER, bodyMap)
       accumulator -= PHYSICS_STEP
     }
 
-    const { events } = triggerSystem(world)
-    for (const ev of events) {
+    for (const ev of triggerSystem(world)) {
       if (ev === 'death') { dead = true; restartDelay = 1.2 }
       if (ev === 'goal')  { levelComplete = true; restartDelay = 1.0 }
     }

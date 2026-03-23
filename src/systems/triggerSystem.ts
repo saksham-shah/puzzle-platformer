@@ -1,14 +1,14 @@
-import { type IWorld, query } from 'bitecs'
+import { type World, query } from 'bitecs'
 import { Position, Player, Goal, Hazard } from '../components'
 import { PLAYER_HALF_W, PLAYER_HALF_H } from '../constants'
 
 export type GameEvent = 'goal' | 'death'
 
-export function triggerSystem(world: IWorld): { world: IWorld; events: GameEvent[] } {
+export function triggerSystem(world: World): GameEvent[] {
   const events: GameEvent[] = []
 
   const players = query(world, [Player, Position])
-  if (players.length === 0) return { world, events }
+  if (players.length === 0) return events
 
   const eid = players[0]!
   const px  = Position.x[eid] ?? 0
@@ -28,7 +28,7 @@ export function triggerSystem(world: IWorld): { world: IWorld; events: GameEvent
     }
   }
 
-  return { world, events }
+  return events
 }
 
 function aabbOverlap(
